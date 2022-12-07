@@ -1,31 +1,38 @@
 import "./App.css";
 import { getMovieList, searchMovie } from "./api";
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from "react";
 
 const App = () => {
   const [popularMovies, setPopularMovies] = useState([]);
 
   useEffect(() => {
     getMovieList().then((result) => {
-      setPopularMovies(result)
-    })
-  }, [])
+      setPopularMovies(result);
+    });
+  }, []);
 
-  const popularMovieList = () => {
+  const PopularMovieList = () => {
     return popularMovies.map((movie, i) => {
       return (
         <div key={i} className="Movie-wrapper">
-            <div className="Movie-title">{movie.title}</div>
-            <img src={movie.poster_path} alt={movie.title} className="Movie-image" />
-            <div className="Movie-date">03-12-2022</div>
-            <div className="Movie-rate">8.9</div>
-          </div>
-      )
-    })
-  }
+          <div className="Movie-title">{movie.title}</div>
+          <img
+            src={`${process.env.REACT_APP_BASEIMGURL}/${movie.poster_path}`}
+            alt={movie.title}
+            className="Movie-image"
+          />
+          <div className="Movie-date">release: {movie.release_date}</div>
+          <div className="Movie-rate">{movie.vote_average}</div>
+        </div>
+      );
+    });
+  };
 
-  const search = (q) => {
-    console.log({ q });
+  const search = async (q) => {
+    if (q.length > 3) {
+      const query = await searchMovie(q);
+      setPopularMovies(query.results)
+    }
   };
 
   return (
@@ -38,12 +45,7 @@ const App = () => {
           onChange={({ target }) => search(target.value)}
         />
         <div className="Movie-container">
-          <div className="Movie-wrapper">
-            <div className="Movie-title">CONTOH PERTAMA</div>
-            <img src="" alt="" className="Movie-image" />
-            <div className="Movie-date">03-12-2022</div>
-            <div className="Movie-rate">8.9</div>
-          </div>
+          <PopularMovieList />
         </div>
       </header>
     </div>
